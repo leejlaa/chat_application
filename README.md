@@ -1,2 +1,10 @@
-# Software-Engineering-Project-Messaging-App-
-A messaging app created with React and Spring Boot
+# 🚀 Software Engineering Project - Messaging App
+
+## Team Name: Huston Rockets
+
+### Team Members:
+- Leljla Krehić  
+- Lejla Dorić  
+- Habiba Ibrahim  
+- Faruk Joldić  
+- Irfan Imširović  
