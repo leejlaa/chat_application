@@ -27,45 +27,56 @@ public class UserService {
     private static final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
     public User registerUser(User user) {
-        // Check if username already exists
+        System.out.println("📝 Attempting to register user: " + user.getUsername());
+    
+        // Check if username exists
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            System.out.println("❌ Username already exists: " + user.getUsername());
             throw new RuntimeException("Username already exists");
         }
-
-        // Check if email already exists
+    
+        // Check if email exists
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            System.out.println("❌ Email already exists: " + user.getEmail());
             throw new RuntimeException("Email already exists");
         }
-
-        // Hash the password
+    
+        // Hash password
+        System.out.println("🔑 Hashing password...");
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        // Save the user
-        return userRepository.save(user);
+    
+        // Save user
+        User savedUser = userRepository.save(user);
+        System.out.println("✅ User successfully registered: " + savedUser.getId());
+    
+        return savedUser;
     }
 
     public LoginResponse loginUser(LoginRequest loginRequest) {
-        // Find the user by username
+        System.out.println("🔍 Checking user: " + loginRequest.getUsername());
+    
         Optional<User> userOptional = userRepository.findByUsername(loginRequest.getUsername());
         if (userOptional.isEmpty()) {
+            System.out.println("❌ User not found in database");
             throw new RuntimeException("User not found");
         }
-
+    
         User user = userOptional.get();
-
-        // Verify the password
+        System.out.println("✅ User found: " + user.getUsername());
+    
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            System.out.println("❌ Incorrect password");
             throw new RuntimeException("Invalid password");
         }
-
-        // Generate a JWT token
+    
+        System.out.println("✅ Password matches. Generating token...");
         String token = Jwts.builder()
                 .setSubject(user.getUsername())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 1 day
                 .signWith(SECRET_KEY)
                 .compact();
-
+    
         return new LoginResponse(token);
     }
 }
