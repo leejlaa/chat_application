@@ -17,18 +17,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // Disable CSRF protection
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/register", "/api/auth/login").permitAll() // Allow public access
-                .anyRequest().authenticated() // Secure all other endpoints
-            )
-            .httpBasic(withDefaults()); // Enable Basic Auth (optional)
-
+    .csrf(csrf -> csrf.disable()) 
+    .cors(withDefaults())
+    .authorizeHttpRequests(auth -> auth
+        .requestMatchers("/api/auth/register", "/api/auth/login", "/api/test").permitAll()
+        .anyRequest().authenticated()
+    )
+    .formLogin(withDefaults()); // Keep form-based login if needed
+    
         return http.build();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // Use BCrypt for password encoding
+        return new BCryptPasswordEncoder();
     }
 }

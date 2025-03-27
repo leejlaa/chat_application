@@ -1,0 +1,112 @@
+body {
+    background-color: white;
+}
+
+/* General Layout */
+.register-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: white;
+    font-family: 'Roboto', sans-serif;
+    padding: 20px;
+}
+
+/* Form Container */
+.form-container {
+    width: 800px;  /* 🚀 Force a fixed width */
+    padding: 40px;
+    background: #f5f5f5;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.form-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+}
+
+/* Heading */
+h2 {
+    text-align: left;  /* 🔥 Ensure left alignment */
+    color: navy;
+    margin-bottom: 20px;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+/* Form Fields */
+.form-field {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+label {
+    font-size: 1rem;
+    color: #333;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+/* Input Fields */
+input {
+    width: 100%;  /* 🚀 Ensure full width */
+    padding: 14px 18px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    background: white;
+    color: #555;
+    height: 50px;
+}
+
+/* Highlight Input Field on Focus */
+input:focus {
+    border-color: navy;
+    box-shadow: 0 0 8px rgba(0, 0, 128, 0.4);
+}
+
+/* Register Button */
+.register-button {
+    width: 100%;
+    padding: 14px;
+    background-color: navy;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.register-button:hover {
+    background-color: #002147;
+    transform: translateY(-2px);
+}
+
+/* Login Link */
+.login-link {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 0.9rem;
+    color: navy;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.login-link span {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.login-link:hover {
+    color: #002147;
+}

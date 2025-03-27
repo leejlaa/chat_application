@@ -134,6 +134,12 @@
                 </configuration>
             </plugin>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.4.2</version>
+            </plugin>
+
             <!-- Spring Boot Maven Plugin (for packaging and running the Spring Boot app) -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>

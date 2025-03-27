@@ -1,0 +1,49 @@
+body {
+    background-color: white;
+  }
+  
+  .home-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: white;
+    font-family: "Roboto", sans-serif;
+  }
+  
+  .content {
+    text-align: center;
+    padding: 30px;
+    background: #f5f5f5;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  }
+  
+  h1 {
+    color: navy;
+    font-size: 2rem;
+  }
+  
+  p {
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .logout-button {
+    padding: 12px 20px;
+    background-color: navy;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+  }
+  
+  .logout-button:hover {
+    background-color: #002147;
+    transform: translateY(-2px);
+  }
+  
