@@ -3,7 +3,7 @@
 ## Team Name: Huston Rockets
 
 ### Team Members:
-- Leljla Krehić  
+- Lejla Krehić  
 - Lejla Dorić  
 - Habiba Ibrahim  
 - Faruk Joldić  
