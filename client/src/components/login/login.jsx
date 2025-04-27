@@ -35,6 +35,7 @@ const handleSubmit = async (e) => {
 
         console.log("🔑 Auth Token:", data.token);
         localStorage.setItem("authToken", data.token);
+        localStorage.setItem("username", credentials.username);
         navigate("/home");
 
     } catch (error) {

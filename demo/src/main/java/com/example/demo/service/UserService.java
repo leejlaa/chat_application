@@ -164,4 +164,9 @@ public class UserService {
                 .toList();
     }
     
+    public List<FriendRequest> getPendingFriendRequests(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+        return friendRequestRepository.findByReceiverAndStatus(user, FriendRequest.Status.PENDING);
+    }
 }

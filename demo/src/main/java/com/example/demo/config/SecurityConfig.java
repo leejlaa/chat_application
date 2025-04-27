@@ -33,7 +33,8 @@ public class SecurityConfig {
             "/api/friends/accept",
             "/api/friends/reject",
             "/api/friends/remove",
-            "/api/friends/list"
+            "/api/friends/list",
+            "/api/friends/pending"
             ).authenticated()
             .anyRequest().authenticated()
         )
