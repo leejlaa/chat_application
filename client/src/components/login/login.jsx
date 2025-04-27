@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./login.css";
+import styles from "./login.module.css";
 
 export default function Login() {
   const [credentials, setCredentials] = useState({ username: "", password: "" });
@@ -35,6 +35,7 @@ const handleSubmit = async (e) => {
 
         console.log("🔑 Auth Token:", data.token);
         localStorage.setItem("authToken", data.token);
+        localStorage.setItem("username", credentials.username);
         navigate("/home");
 
     } catch (error) {
@@ -45,37 +46,39 @@ const handleSubmit = async (e) => {
 
   return (
     <div className="login-page">
-      <div className="form-container">
-        <h2>Login</h2>
+      <div className={styles.formContainer}>
+        <h2 className={styles.title}>Login</h2>
         {errorMessage && <p className="error-message">{errorMessage}</p>}
         <form onSubmit={handleSubmit}>
-        <div className="form-field">
-        <label htmlFor="username">Username</label>
-        <input
-            type="text" // 🔥 Change from "email" to "text"
+        <div className={styles.formField}>
+          <label htmlFor="username" className={styles.label}>Username</label>
+          <input
+            type="text"
             id="username"
             name="username"
-            value={credentials.username} // 🔥 Change from "email" to "username"
+            value={credentials.username}
             onChange={handleChange}
             placeholder="Enter your username"
             required
-        />
+            className={styles.input}
+          />
         </div>
-          <div className="form-field">
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={credentials.password}
-              onChange={handleChange}
-              placeholder="Enter your password"
-              required
-            />
-          </div>
-          <button type="submit" className="login-button">Login</button>
+        <div className={styles.formField}>
+          <label htmlFor="password" className={styles.label}>Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            value={credentials.password}
+            onChange={handleChange}
+            placeholder="Enter your password"
+            required
+            className={styles.input}
+          />
+        </div>
+        <button type="submit" className={styles.loginButton}>Login</button>
         </form>
-        <p className="register-link">
+        <p className={styles.registerLink}>
           Don't have an account?{" "}
           <span onClick={() => navigate("/register")}>Register</span>
         </p>

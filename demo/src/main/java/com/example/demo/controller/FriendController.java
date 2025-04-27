@@ -40,4 +40,9 @@ public class FriendController {
     public ResponseEntity<?> listFriends(@RequestParam String username) {
         return ResponseEntity.ok(userService.findAllFriends(username));
     }
+
+    @GetMapping("/pending")
+    public ResponseEntity<?> getPendingFriendRequests(@RequestParam String username) {
+        return ResponseEntity.ok(userService.getPendingFriendRequests(username));
+    }
 }
