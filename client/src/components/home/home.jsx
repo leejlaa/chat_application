@@ -16,7 +16,7 @@ export default function Home() {
 
   return (
     <div className="home-page">
-      <div className="content">
+      <div className="main-welcome">
         <div style={{ fontSize: "1.5rem", marginBottom: "20px", color: "black" }}>Hi, {username}</div>
         <button onClick={handleLogout} className="logout-button">Logout</button>
       </div>

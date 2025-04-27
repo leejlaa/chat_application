@@ -97,7 +97,7 @@ public class UserService {
             throw new RuntimeException("Cannot send friend request to yourself");
         }
 
-        if (friendRequestRepository.findBySenderAndReceiver(sender, receiver).isPresent()) {
+        if (friendRequestRepository.findBySenderAndReceiverAndStatus(sender, receiver, FriendRequest.Status.PENDING).isPresent()) {
             throw new RuntimeException("Friend request already sent");
         }
 
