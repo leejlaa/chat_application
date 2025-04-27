@@ -114,8 +114,12 @@ export default function Sidebar({ username }) {
           <img src={addFriendIcon} alt="Add Friend" className="sidebar-tab-icon" />
         </button>
       </div>
-      {message && <div className="message success">{message}</div>}
-      {errorMessage && <div className="message error">{errorMessage}</div>}
+      <div className="sidebar-separator" />
+      <div className="sidebar-tab-label">
+        {activeTab === "friends" && "Friend List"}
+        {activeTab === "requests" && "Pending Requests"}
+        {activeTab === "addFriend" && "Add a Friend"}
+      </div>
       <div className="tab-container">
         {activeTab === "friends" && (
           <div className="tab-content">
@@ -146,9 +150,14 @@ export default function Sidebar({ username }) {
         )}
         {activeTab === "addFriend" && (
           <div className="tab-content add-friend">
-            <h2>Add Friend</h2>
-            <input type="text" placeholder="Enter username" value={newFriend} onChange={e => setNewFriend(e.target.value)} />
-            <button onClick={handleAddFriend}>Send</button>
+            <div className="add-friend-row">
+              <input type="text" placeholder="Enter username" value={newFriend} onChange={e => setNewFriend(e.target.value)} />
+              <button className="add-friend-icon-btn" onClick={handleAddFriend} title="Send Friend Request">
+                <img src={addFriendIcon} alt="Add Friend" className="add-friend-icon" />
+              </button>
+            </div>
+            {message && <div className="message success add-friend-message">{message}</div>}
+            {errorMessage && <div className="message error add-friend-message">{errorMessage}</div>}
           </div>
         )}
       </div>

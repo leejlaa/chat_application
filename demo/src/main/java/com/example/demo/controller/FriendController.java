@@ -14,35 +14,59 @@ public class FriendController {
 
     @PostMapping("/request")
     public ResponseEntity<?> sendFriendRequest(@RequestParam String senderUsername, @RequestParam String receiverUsername) {
-        userService.sendFriendRequest(senderUsername, receiverUsername);
-        return ResponseEntity.ok("Friend request sent.");
+        try {
+            userService.sendFriendRequest(senderUsername, receiverUsername);
+            return ResponseEntity.ok("Friend request sent.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PutMapping("/accept")
     public ResponseEntity<?> acceptFriendRequest(@RequestParam String receiverUsername, @RequestParam String senderUsername) {
-        userService.acceptFriendRequest(receiverUsername, senderUsername);
-        return ResponseEntity.ok("Friend request accepted.");
+        try {
+            userService.acceptFriendRequest(receiverUsername, senderUsername);
+            return ResponseEntity.ok("Friend request accepted.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PutMapping("/reject")
     public ResponseEntity<?> rejectFriendRequest(@RequestParam String receiverUsername, @RequestParam String senderUsername) {
-        userService.rejectFriendRequest(receiverUsername, senderUsername);
-        return ResponseEntity.ok("Friend request rejected.");
+        try {
+            userService.rejectFriendRequest(receiverUsername, senderUsername);
+            return ResponseEntity.ok("Friend request rejected.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/remove")
     public ResponseEntity<?> removeFriend(@RequestParam String username, @RequestParam String friendUsername) {
-        userService.removeFriend(username, friendUsername);
-        return ResponseEntity.ok("Friend removed.");
+        try {
+            userService.removeFriend(username, friendUsername);
+            return ResponseEntity.ok("Friend removed.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/list")
     public ResponseEntity<?> listFriends(@RequestParam String username) {
-        return ResponseEntity.ok(userService.findAllFriends(username));
+        try {
+            return ResponseEntity.ok(userService.findAllFriends(username));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/pending")
     public ResponseEntity<?> getPendingFriendRequests(@RequestParam String username) {
-        return ResponseEntity.ok(userService.getPendingFriendRequests(username));
+        try {
+            return ResponseEntity.ok(userService.getPendingFriendRequests(username));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

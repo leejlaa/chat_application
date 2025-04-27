@@ -96,4 +96,22 @@
 
 .registerLink:hover {
     color: #002147;
+}
+
+.passwordToggleIcon {
+    position: absolute;
+    left: 317px;
+    margin-top: 15px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 1.3rem;
+    color: #555;
+    user-select: none;
+    z-index: 2;
+}
+
+.passwordToggleImg {
+    width: 23px;
+    height: 23px;
+    display: block;
 } 
