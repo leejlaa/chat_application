@@ -1,9 +1,4 @@
-body {
-    background-color: white;
-}
-
-/* General Layout */
-.register-page {
+.registerPage {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -13,50 +8,54 @@ body {
     padding: 20px;
 }
 
-/* Form Container */
-.form-container {
-    width: 800px;  /* 🚀 Force a fixed width */
-    padding: 40px;
+.formContainer {
+    width: 300px;
+    min-height: 300px;
+    padding: 60px;
+    padding-top: 40px;
+    padding-bottom: 40px;
     background: #f5f5f5;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     transition: transform 0.3s, box-shadow 0.3s;
 }
 
-.form-container:hover {
+.formContainer:hover {
     transform: translateY(-5px);
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
 }
 
-/* Heading */
-h2 {
-    text-align: left;  /* 🔥 Ensure left alignment */
+.title {
+    text-align: center;
     color: navy;
     margin-bottom: 20px;
     font-size: 2rem;
     font-weight: bold;
 }
 
-/* Form Fields */
-.form-field {
+.formField {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     margin-bottom: 20px;
     width: 100%;
+    position: relative;
+    margin-left: -20px;
 }
 
-label {
+.label {
     font-size: 1rem;
-    color: #333;
+    color: #333 !important;
     font-weight: 500;
     margin-bottom: 5px;
+    margin-left: -10px;
+    align-self: flex-start;
 }
 
-/* Input Fields */
-input {
-    width: 100%;  /* 🚀 Ensure full width */
-    padding: 14px 18px;
+.input {
+    width: 340px;
+    max-width: 900px;
+    padding: 18px 10px 18px 12px;
     font-size: 1rem;
     border: 1px solid #ccc;
     border-radius: 10px;
@@ -64,17 +63,16 @@ input {
     transition: border-color 0.3s, box-shadow 0.3s;
     background: white;
     color: #555;
-    height: 50px;
+    height: 3px;
+    margin-left: -10px;
 }
 
-/* Highlight Input Field on Focus */
-input:focus {
+.input:focus {
     border-color: navy;
     box-shadow: 0 0 8px rgba(0, 0, 128, 0.4);
 }
 
-/* Register Button */
-.register-button {
+.registerButton {
     width: 100%;
     padding: 14px;
     background-color: navy;
@@ -85,28 +83,47 @@ input:focus {
     border-radius: 10px;
     cursor: pointer;
     transition: background 0.3s, transform 0.2s;
+    margin-top: 10px;
 }
 
-.register-button:hover {
+.registerButton:hover {
     background-color: #002147;
     transform: translateY(-2px);
 }
 
-/* Login Link */
-.login-link {
+.loginLink {
     text-align: center;
-    margin-top: 15px;
+    margin-top: 9px;
     font-size: 0.9rem;
     color: navy;
     cursor: pointer;
     transition: color 0.3s;
 }
 
-.login-link span {
+.loginLink span {
     font-weight: bold;
-    text-decoration: underline;
+    text-decoration: none;
+    color: navy;
 }
 
-.login-link:hover {
+.loginLink:hover {
     color: #002147;
 }
+
+.passwordToggleIcon {
+    position: absolute;
+    left: 317px;
+    top: 70%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 1.3rem;
+    color: #555;
+    user-select: none;
+    z-index: 2;
+}
+
+.passwordToggleImg {
+    width: 23px;
+    height: 23px;
+    display: block;
+} 

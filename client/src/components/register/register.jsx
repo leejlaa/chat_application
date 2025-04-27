@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./register.css";
+import styles from "./register.module.css";
+import eyeIcon from "../../assets/icons/eye.png";
+import hiddenIcon from "../../assets/icons/hidden.png";
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -10,6 +12,7 @@ export default function Register() {
   });
 
   const [errorMessage, setErrorMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate(); // Hook for redirection
 
   const handleChange = (e) => {
@@ -43,15 +46,18 @@ export default function Register() {
     }
   };
 
+  const isFormValid = formData.username && formData.email && formData.password;
+
   return (
     <div className="register-page">
-      <div className="form-container">
-        <h2>Register</h2>
+      <div className={styles.formContainer}>
+        <h2 className={styles.title}>Register</h2>
         {errorMessage && <p className="error-message">{errorMessage}</p>}
         <form onSubmit={handleSubmit}>
-          <div className="form-field">
-            <label htmlFor="username">Username</label>
+          <div className={styles.formField}>
+            <label htmlFor="username" className={styles.label}>Username</label>
             <input
+              className={styles.input}
               type="text"
               id="username"
               name="username"
@@ -61,9 +67,10 @@ export default function Register() {
               required
             />
           </div>
-          <div className="form-field">
-            <label htmlFor="email">Email</label>
+          <div className={styles.formField}>
+            <label htmlFor="email" className={styles.label}>Email</label>
             <input
+              className={styles.input}
               type="email"
               id="email"
               name="email"
@@ -73,21 +80,37 @@ export default function Register() {
               required
             />
           </div>
-          <div className="form-field">
-            <label htmlFor="password">Password</label>
+          <div className={styles.formField}>
+            <label htmlFor="password" className={styles.label}>Password</label>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               id="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
               placeholder="Enter your password"
               required
+              className={`${styles.input} ${styles.passwordInput}`}
             />
+            <span
+              onClick={() => setShowPassword((prev) => !prev)}
+              className={styles.passwordToggleIcon}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              tabIndex={0}
+              onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') setShowPassword((prev) => !prev); }}
+            >
+              <img
+                src={showPassword ? hiddenIcon : eyeIcon}
+                alt={showPassword ? 'Hide password' : 'Show password'}
+                className={styles.passwordToggleImg}
+              />
+            </span>
           </div>
-          <button type="submit" className="register-button">Register</button>
+          <button type="submit" className={styles.registerButton} disabled={!isFormValid} style={{ opacity: isFormValid ? 1 : 0.5 }}>
+            Register
+          </button>
         </form>
-        <p className="login-link">
+        <p className={styles.loginLink}>
           Already have an account?{" "}
           <span onClick={() => navigate("/login")}>Login</span>
         </p>
