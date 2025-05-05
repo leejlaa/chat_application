@@ -116,8 +116,8 @@ public class UserService {
         User sender = userRepository.findByUsername(senderUsername)
                 .orElseThrow(() -> new RuntimeException("Sender not found: " + senderUsername));
 
-        FriendRequest request = friendRequestRepository.findBySenderAndReceiver(sender, receiver)
-                .orElseThrow(() -> new RuntimeException("Friend request not found"));
+        FriendRequest request = friendRequestRepository.findBySenderAndReceiverAndStatus(sender, receiver, FriendRequest.Status.PENDING)
+                .orElseThrow(() -> new RuntimeException("Pending friend request not found"));
 
         request.setStatus(FriendRequest.Status.ACCEPTED);
         friendRequestRepository.save(request);
@@ -136,8 +136,8 @@ public class UserService {
         User sender = userRepository.findByUsername(senderUsername)
                 .orElseThrow(() -> new RuntimeException("Sender not found: " + senderUsername));
 
-        FriendRequest request = friendRequestRepository.findBySenderAndReceiver(sender, receiver)
-                .orElseThrow(() -> new RuntimeException("Friend request not found"));
+        FriendRequest request = friendRequestRepository.findBySenderAndReceiverAndStatus(sender, receiver, FriendRequest.Status.PENDING)
+                .orElseThrow(() -> new RuntimeException("Pending friend request not found"));
 
         request.setStatus(FriendRequest.Status.REJECTED);
         friendRequestRepository.save(request);
