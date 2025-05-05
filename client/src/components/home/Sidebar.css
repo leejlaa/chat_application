@@ -26,7 +26,8 @@
   padding: 8px 12px;
   color: #001f3f;
   border-radius: 5px;
-  transition: color 0.2s;
+  transition: all 0.2s;
+  position: relative;
 }
 
 .sidebar-header button .sidebar-tab-icon {
@@ -39,8 +40,16 @@
   filter: invert(13%) sepia(97%) saturate(7492%) hue-rotate(210deg) brightness(120%) contrast(120%);
 }
 
-.sidebar-header button.active {
-  /* No background, just icon color change */
+.sidebar-header button.active::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 2px;
+  background-color: #001f3f;
+  border-radius: 1px;
 }
 
 .sidebar-header button:hover {
@@ -55,6 +64,7 @@
   list-style: none;
   padding: 0;
   margin: 0;
+  margin-top: 5px;
 }
 
 .friend-item, .pending-item {
@@ -72,26 +82,43 @@
   font-weight: bold;
 }
 
-.friend-item button, .pending-item button {
-  background: #001f3f;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  padding: 4px 10px;
-  cursor: pointer;
-  margin-left: 8px;
-  font-size: 13px;
+.action-buttons {
+  display: flex;
+  gap: 6px;
 }
 
-.friend-item button:hover, .pending-item button:hover {
-  background: #0056b3;
+.icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.icon-button:hover {
+  background: none;
+}
+
+.action-icon {
+  width: 22px;
+  height: 22px;
+  filter: invert(13%) sepia(97%) saturate(7492%) hue-rotate(210deg) brightness(90%) contrast(110%);
+  transition: filter 0.2s;
+}
+
+.icon-button:hover .action-icon {
+  filter: invert(13%) sepia(97%) saturate(7492%) hue-rotate(210deg) brightness(120%) contrast(120%);
 }
 
 .add-friend {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 10px;
+  margin-top: 5px;
 }
 
 .add-friend-row {
@@ -152,33 +179,37 @@
   background: none;
 }
 
-.add-friend button {
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 22px;
-  font-size: 1rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.2s;
-  margin-left: -10px;
-}
-
-.add-friend-message {
-  margin-top: 8px;
-  margin-bottom: 0;
+.message {
+  margin-top: 5px;
+  margin-bottom: 12px;
   text-align: center;
-  font-size: 0.97rem;
+  font-size: 0.9rem;
+  padding: 5px 10px;
+  border-radius: 6px;
 }
 
 .message.success {
   color: #008000;
-  margin-bottom: 10px;
+  background-color: rgba(0, 128, 0, 0.1);
 }
 
 .message.error {
   color: #dc3545;
-  margin-bottom: 10px;
+  background-color: rgba(220, 53, 69, 0.1);
+}
+
+.fade-out {
+  animation: fadeOut 6s forwards;
+  animation-delay: 0.5s;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 .sidebar-tab-icon {
@@ -203,8 +234,15 @@
   font-size: 1.1rem;
   font-weight: bold;
   color: #001f3f;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   letter-spacing: 0.5px;
+}
+
+.empty-message {
+  color: #666;
+  font-style: italic;
+  text-align: center;
+  margin-top: 10px;
 }
 
 .logout-button {

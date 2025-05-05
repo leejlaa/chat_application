@@ -3,6 +3,8 @@ import "./Sidebar.css";
 import groupIcon from "../../assets/icons/group.png";
 import notificationIcon from "../../assets/icons/notification.png";
 import addFriendIcon from "../../assets/icons/add-friend.png";
+import acceptIcon from "../../assets/icons/accept_icon.png";
+import rejectIcon from "../../assets/icons/reject_icon.png";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -39,6 +41,18 @@ export default function Sidebar({ username }) {
       .then(data => setPendingRequests(data))
       .catch(() => setPendingRequests([]));
   }, [activeTab, username]);
+
+  // Message timeout effect
+  useEffect(() => {
+    let timeout;
+    if (message || errorMessage) {
+      timeout = setTimeout(() => {
+        setMessage("");
+        setErrorMessage("");
+      }, 4000);
+    }
+    return () => clearTimeout(timeout);
+  }, [message, errorMessage]);
 
   const handleAddFriend = async () => {
     setMessage(""); setErrorMessage("");
@@ -120,32 +134,43 @@ export default function Sidebar({ username }) {
         {activeTab === "requests" && "Pending Requests"}
         {activeTab === "addFriend" && "Add a Friend"}
       </div>
+      
       <div className="tab-container">
         {activeTab === "friends" && (
           <div className="tab-content">
-            <h2>Friends List</h2>
             <ul className="friends-list">
               {friends.length > 0 ? friends.map(friend => (
                 <li key={friend} className="friend-item">
                   <span className="username">{friend}</span>
-                  <button onClick={() => handleRemoveFriend(friend)}>Remove</button>
+                  <button className="icon-button" onClick={() => handleRemoveFriend(friend)} title="Remove Friend">
+                    <img src={rejectIcon} alt="Remove" className="action-icon" />
+                  </button>
                 </li>
-              )) : <p>No friends yet.</p>}
+              )) : <p className="empty-message">No friends yet.</p>}
             </ul>
+            {activeTab === "friends" && message && <div className="message success fade-out">{message}</div>}
+            {activeTab === "friends" && errorMessage && <div className="message error fade-out">{errorMessage}</div>}
           </div>
         )}
         {activeTab === "requests" && (
           <div className="tab-content">
-            <h2>Pending Requests</h2>
             <ul className="pending-requests">
               {pendingRequests.length > 0 ? pendingRequests.map(req => (
                 <li key={req.id} className="pending-item">
                   <span className="username">{req.sender.username}</span>
-                  <button onClick={() => handleAccept(req.sender.username)}>Accept</button>
-                  <button onClick={() => handleReject(req.sender.username)}>Reject</button>
+                  <div className="action-buttons">
+                    <button className="icon-button" onClick={() => handleAccept(req.sender.username)} title="Accept">
+                      <img src={acceptIcon} alt="Accept" className="action-icon" />
+                    </button>
+                    <button className="icon-button" onClick={() => handleReject(req.sender.username)} title="Reject">
+                      <img src={rejectIcon} alt="Reject" className="action-icon" />
+                    </button>
+                  </div>
                 </li>
-              )) : <p>No pending requests.</p>}
+              )) : <p className="empty-message">No pending requests.</p>}
             </ul>
+            {activeTab === "requests" && message && <div className="message success fade-out">{message}</div>}
+            {activeTab === "requests" && errorMessage && <div className="message error fade-out">{errorMessage}</div>}
           </div>
         )}
         {activeTab === "addFriend" && (
@@ -156,8 +181,8 @@ export default function Sidebar({ username }) {
                 <img src={addFriendIcon} alt="Add Friend" className="add-friend-icon" />
               </button>
             </div>
-            {message && <div className="message success add-friend-message">{message}</div>}
-            {errorMessage && <div className="message error add-friend-message">{errorMessage}</div>}
+            {activeTab === "addFriend" && message && <div className="message success fade-out">{message}</div>}
+            {activeTab === "addFriend" && errorMessage && <div className="message error fade-out">{errorMessage}</div>}
           </div>
         )}
       </div>
