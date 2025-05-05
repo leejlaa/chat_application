@@ -1,5 +1,6 @@
 package com.example.demo.config;
 
+import com.example.demo.config.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,22 +25,30 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-    .csrf(csrf -> csrf.disable()) 
-    .cors(withDefaults())
-    .authorizeHttpRequests(auth -> auth
-        .requestMatchers("/api/auth/register", "/api/auth/login", "/api/test").permitAll()
-        .requestMatchers(
-             "/api/friends/request",
-            "/api/friends/accept",
-            "/api/friends/reject",
-            "/api/friends/remove",
-            "/api/friends/list",
-            "/api/friends/pending"
-            ).authenticated()
-            .anyRequest().authenticated()
-        )
-    .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-    
+                .csrf(csrf -> csrf.disable())
+                .cors(withDefaults())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/api/auth/register",
+                                "/api/auth/login",
+                                "/api/test",
+                                "/error",
+                                "/chat.html",
+                                "/ws/**",
+                                "/css/**", "/js/**", "/images/**"
+                        ).permitAll()
+                        .requestMatchers(
+                                "/api/friends/request",
+                                "/api/friends/accept",
+                                "/api/friends/reject",
+                                "/api/friends/remove",
+                                "/api/friends/list",
+                                "/api/friends/pending"
+                        ).authenticated()
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
