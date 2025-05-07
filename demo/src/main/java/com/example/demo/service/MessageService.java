@@ -31,8 +31,8 @@ public class MessageService {
         }
 
         Message message = Message.builder()
-                .sender(sender)
-                .receiver(receiver)
+                .sender(sender.getUsername())
+                .receiver(receiver.getUsername())
                 .content(chatMessage.getContent())
                 .timestamp(LocalDateTime.now())
                 .build();
