@@ -16,11 +16,16 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.util.Collections;
+import org.springframework.context.annotation.Lazy;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    private final SecretKey secretKey = UserService.SECRET_KEY;
+    private final UserService userService;
+
+    public JwtAuthFilter(@Lazy UserService userService) {
+        this.userService = userService;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -37,7 +42,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         final String token = header.substring(7);
         try {
             Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
+                    .setSigningKey(userService.getSecretKey())
                     .build()
                     .parseClaimsJws(token)
                     .getBody();

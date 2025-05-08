@@ -11,9 +11,12 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 
+@Transactional
 @Controller
 public class MessageController {
 
@@ -30,30 +33,51 @@ public class MessageController {
     }
 
     @MessageMapping("/chat")
-    public void sendMessage(@Payload MessageDTO messageDTO) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) return;
+   public void sendMessage(@Payload MessageDTO messageDTO, Principal principal) {
+    if (principal == null) {
+        System.out.println("❌ No user principal in WebSocket session");
+        return;
+    }
 
-        String senderUsername = auth.getName();
-
-        // Ensure sender and receiver are friends
+    String senderUsername = principal.getName();
+    System.out.println("✅ WebSocket message from: " + senderUsername);
         User sender = userRepository.findByUsername(senderUsername).orElse(null);
         User receiver = userRepository.findByUsername(messageDTO.getReceiver()).orElse(null);
-
-        if (sender == null || receiver == null || !sender.getFriends().contains(receiver)) {
-            System.out.println("Message rejected: not friends");
+    
+        if (sender == null || receiver == null) {
+            System.out.println("❌ Sender or receiver not found");
             return;
         }
-
-        // Save to database
+    
+        boolean areFriends = sender.getFriends().stream()
+            .anyMatch(friend -> friend.getUsername().equals(receiver.getUsername()));
+    
+        if (!areFriends) {
+            System.out.println("❌ Message rejected: not mutual friends");
+            return;
+        }
+    
+        // Save the message
         Message msg = new Message();
         msg.setSender(senderUsername);
         msg.setReceiver(messageDTO.getReceiver());
         msg.setContent(messageDTO.getContent());
         msg.setTimestamp(LocalDateTime.now());
-        messageRepository.save(msg);
+        // Save to database
+try {
+    messageRepository.save(msg);
+    System.out.println("💾 Message saved successfully. ID: " + msg.getId());
+} catch (Exception e) {
+    System.out.println("❌ Error saving message: " + e.getMessage());
+    e.printStackTrace();
+    return;
+}
 
-        // Forward to frontend
+    
+        System.out.println("✅ Sending message from " + senderUsername + " to " + receiver.getUsername());
+    
+        // Send to both sender and receiver topics
         messagingTemplate.convertAndSend("/topic/messages/" + msg.getReceiver(), msg);
+        
     }
 }

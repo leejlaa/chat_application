@@ -9,12 +9,21 @@ import com.example.demo.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.util.Date;
 import java.util.Optional;
 
@@ -30,8 +39,19 @@ public class UserService {
     @Autowired
     private FriendRequestRepository friendRequestRepository;
 
-    public static final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    @Value("${jwt.secret}")
+    private String jwtSecret;
 
+    private SecretKey secretKey;
+
+    @PostConstruct
+    private void initSecretKey() {
+        this.secretKey = new SecretKeySpec(jwtSecret.getBytes(StandardCharsets.UTF_8), SignatureAlgorithm.HS256.getJcaName());
+    }
+
+    public SecretKey getSecretKey() {
+        return secretKey;
+    }
     public User registerUser(User user) {
         System.out.println("📝 Attempting to register user: " + user.getUsername());
     
@@ -80,7 +100,7 @@ public class UserService {
                 .setSubject(user.getUsername())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 1 day
-                .signWith(SECRET_KEY)
+                .signWith(secretKey, SignatureAlgorithm.HS256) // ✅ not deprecated
                 .compact();
     
         return new LoginResponse(token);

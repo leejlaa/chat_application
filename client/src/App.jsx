@@ -1,28 +1,15 @@
-import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Register from "./components/register/register";
 import Login from "./components/login/login";
 import Home from "./components/home/home"; // New home component
+import Chatpage from "./components/chat-page/Chatpage"; // New chat page component
 
 import "./App.css";
 
 function App() {
-  const [message, setMessage] = useState("Loading...");
 
-  useEffect(() => {
-    fetch(import.meta.env.VITE_API_URL + "/api/test", {
-      method: "GET",
-      credentials: "include",
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Unauthorized");
-        }
-        return response.text();
-      })
-      .then((data) => setMessage(data))
-      .catch((error) => setMessage("Error fetching data: " + error.message));
-  }, []);
+  
+  
 
   return (
     <Router>
@@ -31,6 +18,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/home" element={<Home />} />
+        <Route path="/home/:friend" element={<Chatpage />} />
       </Routes>
     </Router>
   );

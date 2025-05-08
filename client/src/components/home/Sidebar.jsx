@@ -8,13 +8,15 @@ import rejectIcon from "../../assets/icons/reject_icon.png";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-export default function Sidebar({ username }) {
+export default function Sidebar({ username, onSelectFriend }) {
   const [activeTab, setActiveTab] = useState("friends");
   const [friends, setFriends] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
   const [newFriend, setNewFriend] = useState("");
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  
+
 
   const authHeader = {
     "Authorization": "Bearer " + localStorage.getItem("authToken")
@@ -141,7 +143,9 @@ export default function Sidebar({ username }) {
             <ul className="friends-list">
               {friends.length > 0 ? friends.map(friend => (
                 <li key={friend} className="friend-item">
-                  <span className="username">{friend}</span>
+                  <li key={friend} onClick={() => onSelectFriend(friend)}>
+                    {friend}
+                  </li>
                   <button className="icon-button" onClick={() => handleRemoveFriend(friend)} title="Remove Friend">
                     <img src={rejectIcon} alt="Remove" className="action-icon" />
                   </button>
