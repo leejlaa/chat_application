@@ -2,7 +2,6 @@ package com.example.demo.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
@@ -12,10 +11,10 @@ import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
+import org.springframework.lang.NonNull;
 
 import com.example.demo.service.UserService;
 
-import java.security.Principal;
 import java.util.List;
 
 @Component
@@ -28,46 +27,49 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
     }
 
     @Override
-    public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+public Message<?> preSend(@NonNull Message<?> message, @NonNull MessageChannel channel) {
+    StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
-        if (accessor != null && accessor.getCommand() != null) {
-if (accessor.getCommand().equals(StompCommand.CONNECT) || accessor.getCommand().equals(StompCommand.SEND)) {
-                List<String> authHeaders = accessor.getNativeHeader("Authorization");
-                if (authHeaders != null && !authHeaders.isEmpty()) {
-                    String token = authHeaders.get(0).replace("Bearer ", "").trim();
-                    try {
-                        System.out.println("🔐 WebSocket token received: " + token);
+    if (accessor == null) return message;
 
-                        Claims claims = Jwts.parserBuilder()
-                                .setSigningKey(userService.getSecretKey())
-                                .build()
-                                .parseClaimsJws(token)
-                                .getBody();
+    StompCommand command = accessor.getCommand();
+    if (command == null) return message;
 
-                        String username = claims.getSubject();
-                        System.out.println("✅ Token validated for user: " + username);
+    if (command.equals(StompCommand.CONNECT) || command.equals(StompCommand.SEND)) {
+        List<String> authHeaders = accessor.getNativeHeader("Authorization");
+        if (authHeaders != null && !authHeaders.isEmpty()) {
+            String token = authHeaders.get(0).replace("Bearer ", "").trim();
+            try {
+                System.out.println("🔐 WebSocket token received: " + token);
 
-                        UsernamePasswordAuthenticationToken authentication =
-                                new UsernamePasswordAuthenticationToken(
-                                        username,
-                                        null,
-                                        List.of(new SimpleGrantedAuthority("ROLE_USER"))
-                                );
+                Claims claims = Jwts.parserBuilder()
+                        .setSigningKey(userService.getSecretKey())
+                        .build()
+                        .parseClaimsJws(token)
+                        .getBody();
 
-                        // Only accessor.setUser is required for WebSocket identity
-                        accessor.setUser(authentication);
+                String username = claims.getSubject();
+                System.out.println("✅ Token validated for user: " + username);
 
-                    } catch (Exception e) {
-                        System.out.println("❌ Invalid token in WebSocket: " + e.getMessage());
-                        throw new IllegalArgumentException("Invalid token");
-                    }
-                } else {
-                    System.out.println("⚠️ No Authorization header in STOMP CONNECT/SEND frame");
-                }
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                username,
+                                null,
+                                List.of(new SimpleGrantedAuthority("ROLE_USER"))
+                        );
+
+                accessor.setUser(authentication);
+
+            } catch (Exception e) {
+                System.out.println("❌ Invalid token in WebSocket: " + e.getMessage());
+                throw new IllegalArgumentException("Invalid token");
             }
+        } else {
+            System.out.println("⚠️ No Authorization header in STOMP CONNECT/SEND frame");
         }
-
-        return message;
     }
+
+    return message;
+}
+
 }

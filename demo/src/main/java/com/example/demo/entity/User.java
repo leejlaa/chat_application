@@ -13,6 +13,8 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Getter
 @Setter
@@ -33,6 +35,7 @@ public class User {
     @Size(min = 8, message = "Password must be at least 8 characters long")
     @Pattern(regexp = ".*\\d.*", message = "Password must contain at least one number")
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
 
     @NotBlank(message = "Email is required")
@@ -46,6 +49,7 @@ public class User {
         joinColumns = @JoinColumn(name = "user_id"),
         inverseJoinColumns = @JoinColumn(name = "friend_id")
     )
+    @JsonIgnore
     private Set<User> friends = new HashSet<>();
 
     @Override

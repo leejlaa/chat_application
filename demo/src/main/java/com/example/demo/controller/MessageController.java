@@ -2,22 +2,22 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.MessageDTO;
 import com.example.demo.entity.Message;
+import com.example.demo.entity.User;
 import com.example.demo.repository.MessageRepository;
 import com.example.demo.repository.UserRepository;
-import com.example.demo.entity.User;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*; // ← added
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Transactional
-@Controller
+@RestController // ← change from @Controller to @RestController
+@RequestMapping("/api/messages")
 public class MessageController {
 
     private final SimpMessagingTemplate messagingTemplate;
@@ -33,51 +33,40 @@ public class MessageController {
     }
 
     @MessageMapping("/chat")
-   public void sendMessage(@Payload MessageDTO messageDTO, Principal principal) {
-    if (principal == null) {
-        System.out.println("❌ No user principal in WebSocket session");
-        return;
-    }
+    public void sendMessage(@Payload MessageDTO messageDTO, Principal principal) {
+        if (principal == null) {
+            System.out.println("❌ No user principal in WebSocket session");
+            return;
+        }
 
-    String senderUsername = principal.getName();
-    System.out.println("✅ WebSocket message from: " + senderUsername);
+        String senderUsername = principal.getName();
         User sender = userRepository.findByUsername(senderUsername).orElse(null);
         User receiver = userRepository.findByUsername(messageDTO.getReceiver()).orElse(null);
-    
-        if (sender == null || receiver == null) {
-            System.out.println("❌ Sender or receiver not found");
-            return;
-        }
-    
+
+        if (sender == null || receiver == null) return;
+
         boolean areFriends = sender.getFriends().stream()
-            .anyMatch(friend -> friend.getUsername().equals(receiver.getUsername()));
-    
-        if (!areFriends) {
-            System.out.println("❌ Message rejected: not mutual friends");
-            return;
-        }
-    
-        // Save the message
+                .anyMatch(friend -> friend.getUsername().equals(receiver.getUsername()));
+
+        if (!areFriends) return;
+
         Message msg = new Message();
         msg.setSender(senderUsername);
-        msg.setReceiver(messageDTO.getReceiver());
+        msg.setReceiver(receiver.getUsername());
         msg.setContent(messageDTO.getContent());
         msg.setTimestamp(LocalDateTime.now());
-        // Save to database
-try {
-    messageRepository.save(msg);
-    System.out.println("💾 Message saved successfully. ID: " + msg.getId());
-} catch (Exception e) {
-    System.out.println("❌ Error saving message: " + e.getMessage());
-    e.printStackTrace();
-    return;
-}
 
-    
-        System.out.println("✅ Sending message from " + senderUsername + " to " + receiver.getUsername());
-    
-        // Send to both sender and receiver topics
-        messagingTemplate.convertAndSend("/topic/messages/" + msg.getReceiver(), msg);
-        
+        messageRepository.save(msg);
+        messagingTemplate.convertAndSend("/topic/messages/" + receiver.getUsername(), msg);
+    }
+
+    // ✅ REST endpoint for chat history
+    @GetMapping("/history")
+    public List<Message> getChatHistory(@RequestParam String friendUsername, Principal principal) {
+        String currentUsername = principal.getName();
+        return messageRepository.findBySenderAndReceiverOrReceiverAndSenderOrderByTimestampAsc(
+                currentUsername, friendUsername,
+                currentUsername, friendUsername
+        );
     }
 }

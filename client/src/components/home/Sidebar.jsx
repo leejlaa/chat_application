@@ -15,8 +15,6 @@ export default function Sidebar({ username, onSelectFriend }) {
   const [newFriend, setNewFriend] = useState("");
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  
-
 
   const authHeader = {
     "Authorization": "Bearer " + localStorage.getItem("authToken")
