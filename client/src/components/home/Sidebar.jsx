@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Sidebar.css";
+import userIcon from "../../assets/icons/user.png";
 import groupIcon from "../../assets/icons/group.png";
 import notificationIcon from "../../assets/icons/notification.png";
 import addFriendIcon from "../../assets/icons/add-friend.png";
@@ -9,6 +11,7 @@ import rejectIcon from "../../assets/icons/reject_icon.png";
 const API_URL = import.meta.env.VITE_API_URL;
 
 export default function Sidebar({ username, onSelectFriend }) {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("friends");
   const [friends, setFriends] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
@@ -114,6 +117,12 @@ export default function Sidebar({ username, onSelectFriend }) {
       setErrorMessage(e.message);
     }
   };
+  
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("username");
+    navigate("/login");
+  };
 
   return (
     <div className="sidebar">
@@ -140,11 +149,27 @@ export default function Sidebar({ username, onSelectFriend }) {
           <div className="tab-content">
             <ul className="friends-list">
               {friends.length > 0 ? friends.map(friend => (
-                <li key={friend} className="friend-item">
-                  <li key={friend} onClick={() => onSelectFriend(friend)}>
-                    {friend}
-                  </li>
-                  <button className="icon-button" onClick={() => handleRemoveFriend(friend)} title="Remove Friend">
+                <li 
+                  key={friend} 
+                  className="friend-item" 
+                  onClick={() => onSelectFriend(friend)}
+                >
+                  <div className="friend-profile">
+                    <div className="friend-avatar">
+                      <img src={userIcon} alt="User" />
+                    </div>
+                    <div className="friend-name">
+                      {friend}
+                    </div>
+                  </div>
+                  <button 
+                    className="icon-button" 
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent triggering the parent click
+                      handleRemoveFriend(friend);
+                    }} 
+                    title="Remove Friend"
+                  >
                     <img src={rejectIcon} alt="Remove" className="action-icon" />
                   </button>
                 </li>
@@ -159,7 +184,12 @@ export default function Sidebar({ username, onSelectFriend }) {
             <ul className="pending-requests">
               {pendingRequests.length > 0 ? pendingRequests.map(req => (
                 <li key={req.id} className="pending-item">
-                  <span className="username">{req.sender.username}</span>
+                  <div className="friend-profile">
+                    <div className="friend-avatar">
+                      <img src={userIcon} alt="User" />
+                    </div>
+                    <span className="username">{req.sender.username}</span>
+                  </div>
                   <div className="action-buttons">
                     <button className="icon-button" onClick={() => handleAccept(req.sender.username)} title="Accept">
                       <img src={acceptIcon} alt="Accept" className="action-icon" />
@@ -188,6 +218,7 @@ export default function Sidebar({ username, onSelectFriend }) {
           </div>
         )}
       </div>
+      <button onClick={handleLogout} className="logout-button sidebar-logout">Logout</button>
     </div>
   );
 } 

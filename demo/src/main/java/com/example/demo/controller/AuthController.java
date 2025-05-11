@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.LoginRequest;
 import com.example.demo.dto.LoginResponse;
+import com.example.demo.dto.RegisterRequest;
 import com.example.demo.entity.User;
 import com.example.demo.service.UserService;
 import jakarta.validation.Valid;
@@ -20,10 +21,10 @@ public class AuthController {
     private UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody User user) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
         try {
-            System.out.println("📝 Registering user: " + user.getUsername());
-            User registeredUser = userService.registerUser(user);
+            System.out.println("📝 Registering user: " + registerRequest.getUsername());
+            User registeredUser = userService.registerUser(registerRequest);
             System.out.println("✅ User registered: " + registeredUser.getUsername());
             return ResponseEntity.ok(registeredUser);
         } catch (RuntimeException e) {
