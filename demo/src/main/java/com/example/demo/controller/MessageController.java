@@ -16,9 +16,6 @@ import org.springframework.http.ResponseEntity;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.Map;
 
 @Transactional
 @RestController // ← change from @Controller to @RestController
@@ -29,6 +26,7 @@ public class MessageController {
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
     private final JdbcTemplate jdbcTemplate;
+
 
     public MessageController(SimpMessagingTemplate messagingTemplate,
                              MessageRepository messageRepository,

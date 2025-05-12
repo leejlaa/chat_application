@@ -28,4 +28,8 @@ public class ChatGroup {
         inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private Set<User> members = new HashSet<>();
+
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private User owner;
 }

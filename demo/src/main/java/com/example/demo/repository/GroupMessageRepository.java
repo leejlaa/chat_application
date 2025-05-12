@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface GroupMessageRepository extends JpaRepository<GroupMessage, Long> {
-    List<GroupMessage> findByGroupIdOrderByTimestampAsc(Long groupId);
+    List<GroupMessage> findByGroupIdOrderByTimestamp(Long groupId);
 }
