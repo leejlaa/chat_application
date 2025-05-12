@@ -22,6 +22,7 @@ import javax.crypto.SecretKey;
 
 import java.util.Date;
 import java.util.Optional;
+import com.example.demo.dto.RegisterRequest;
 
 @Service
 public class UserService {
@@ -48,24 +49,29 @@ public class UserService {
     public SecretKey getSecretKey() {
         return secretKey;
     }
-    public User registerUser(User user) {
-        System.out.println("📝 Attempting to register user: " + user.getUsername());
+    public User registerUser(RegisterRequest registerRequest) {
+        System.out.println("📝 Attempting to register user: " + registerRequest.getUsername());
     
         // Check if username exists
-        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            System.out.println("❌ Username already exists: " + user.getUsername());
+        if (userRepository.findByUsername(registerRequest.getUsername()).isPresent()) {
+            System.out.println("❌ Username already exists: " + registerRequest.getUsername());
             throw new RuntimeException("Username already exists");
         }
     
         // Check if email exists
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            System.out.println("❌ Email already exists: " + user.getEmail());
+        if (userRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
+            System.out.println("❌ Email already exists: " + registerRequest.getEmail());
             throw new RuntimeException("Email already exists");
         }
     
+        // Create a new User entity from the DTO
+        User user = new User();
+        user.setUsername(registerRequest.getUsername());
+        user.setEmail(registerRequest.getEmail());
+        
         // Hash password
         System.out.println("🔑 Hashing password...");
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
     
         // Save user
         User savedUser = userRepository.save(user);

@@ -1,0 +1,138 @@
+.recent-chats {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 250px;
+  height: 100vh;
+  background-color: #f5f5f5;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  overflow-y: auto;
+}
+
+.recent-chats h2 {
+  color: #000;
+  font-size: 20px;
+  margin-bottom: 20px;
+  text-align: center;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #001f3f;
+}
+
+.chat-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.chat-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.chat-item:hover {
+  background-color: #e9f0f7;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 12px;
+  background-color: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar img {
+  width: 24px;
+  height: 24px;
+  object-fit: cover;
+}
+
+.chat-details {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.chat-content {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+  width: 100%;
+}
+
+.username {
+  font-weight: bold;
+  color: #000;
+  font-size: 14px;
+  margin-right: 8px;
+  text-align: left;
+}
+
+.message-preview {
+  display: flex;
+  align-items: center;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.message-text {
+  color: #666;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+.timestamp {
+  color: #888;
+  font-size: 11px;
+  margin-left: 8px;
+  white-space: nowrap;
+  align-self: flex-start;
+}
+
+.you {
+  font-weight: 500;
+  color: #444;
+  display: inline;
+}
+
+.loading, .no-chats {
+  color: #888;
+  text-align: center;
+  margin-top: 20px;
+  font-style: italic;
+}
+
+.error-message {
+  color: #d32f2f;
+  text-align: center;
+  margin-top: 20px;
+  font-style: italic;
+} 
