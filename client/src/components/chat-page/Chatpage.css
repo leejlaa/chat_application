@@ -1,9 +1,18 @@
 .chat-container {
     width: 1000px;
     margin-left: -250px;
-    padding: 1rem;
+    padding: 0;
+    padding-top: 70px; /* Add space for fixed header */
+    padding-bottom: 80px; /* Add space for fixed footer */
     font-family: sans-serif;
-    margin-bottom: 0px;
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #fff;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 1;
 }
 
 .chat-header {
@@ -11,8 +20,14 @@
     align-items: center;
     justify-content: space-between;
     padding: 1rem;
-    margin-bottom: 1rem;
     border-bottom: 1px solid #e0e0e0;
+    background-color: #fff;
+    z-index: 10;
+    position: fixed;
+    top: 0;
+    left: 252px; /* Match the margin of the footer */
+    width: 67.3%; /* Match the width of the footer */
+    box-sizing: border-box;
 }
 
 .friend-profile {
@@ -53,12 +68,13 @@
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    height: 500px;
+    flex: 1;
     overflow-y: auto;
-    margin-bottom: 1px;
     padding: 1rem;
+    margin: 0 1rem;
     background-color: #fff;
-    border-radius: 10px;
+    border-radius: 8px 8px 0 0;
+    z-index: 1;
     /* Hide scrollbar while maintaining scrollability */
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE and Edge */
@@ -181,26 +197,64 @@
     background: inherit; /* Inherits the background color from the message bubble */
 }
 
+.chat-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 67.3%;
+    background-color: #f0f0f0;
+    padding: 15px 0;
+    box-sizing: border-box;
+    margin-left: 252px;
+    z-index: 5;
+}
+
 .chat-input {
     display: flex;
+    align-items: center;
     gap: 0.5rem;
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 15px;
 }
 
 .chat-input input {
     flex: 1;
-    padding: 0.5rem;
+    padding: 0.8rem;
     border-radius: 5px;
-    border: 1px solid #ccc;
+    border: none;
     background-color: #fff;
-    color: #000;
+    color: #333;
+    font-size: 14px;
+    outline: none;
 }
 
 .chat-input button {
-    padding: 0.5rem 1rem;
+    padding: 0.8rem;
     border: none;
-    background-color: #0077ff;
+    background-color: transparent;
     color: white;
     border-radius: 5px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chat-input button:hover {
+    background-color: transparent;
+}
+
+.chat-input button img {
+    width: 24px;
+    height: 24px;
+    filter: invert(13%) sepia(97%) saturate(7492%) hue-rotate(210deg) brightness(90%) contrast(110%); /* navy blue */
+    transition: filter 0.2s;
+}
+
+.chat-input button:hover img {
+    filter: invert(33%) sepia(97%) saturate(1500%) hue-rotate(200deg) brightness(100%) contrast(95%); /* lighter blue */
 }
   

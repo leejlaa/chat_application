@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Client } from "@stomp/stompjs";
-import "./ChatPage.css"; // If you keep styles in a separate file
+import "./Chatpage.css"; // Fixed import to match the exact file name
 import userIcon from "../../assets/icons/user.png";
+import sendIcon from "../../assets/icons/send_icon.png";
 
 const SOCKET_URL = import.meta.env.VITE_API_URL.replace(/^http/, "ws") + "/ws";
 const API_URL = import.meta.env.VITE_API_URL;
@@ -179,18 +180,20 @@ export default function ChatPage({ username, friend }) {
         })}
       </div>
 
-      <div className="chat-input">
-        <input
-          type="text"
-          value={input}
-          placeholder="Type a message..."
-          onChange={(e) => setInput(e.target.value)}
-          disabled={!connected}
-          onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-        />
-        <button onClick={sendMessage} disabled={!connected || !input.trim()}>
-          Send
-        </button>
+      <div className="chat-footer">
+        <div className="chat-input">
+          <input
+            type="text"
+            value={input}
+            placeholder="Type a message..."
+            onChange={(e) => setInput(e.target.value)}
+            disabled={!connected}
+            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+          />
+          <button onClick={sendMessage} disabled={!connected || !input.trim()}>
+            <img src={sendIcon} alt="Send" />
+          </button>
+        </div>
       </div>
     </div>
   );

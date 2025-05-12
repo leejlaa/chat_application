@@ -4,6 +4,7 @@ import Sidebar from "./Sidebar";
 import ChatPage from "../chat-page/Chatpage";
 import RecentChats from "./RecentChats";
 import { useState } from "react";
+import logo from "../../assets/icons/logo.png";
 
 export default function Home() {
   const username = localStorage.getItem("username");
@@ -17,15 +18,18 @@ export default function Home() {
     <div className="home-page">
       <RecentChats username={username} onSelectFriend={handleSelectFriend} />
       <div className="main-content">
-        <div style={{ display: "flex" }}>
-          <Sidebar username={username} onSelectFriend={handleSelectFriend} />
-          
-          {selectedFriend && (
-            <div style={{ flex: 1 }}>
+        <Sidebar username={username} onSelectFriend={handleSelectFriend} />
+        
+        {selectedFriend ? (
+          <div style={{ flex: 1 }}>
             <ChatPage username={username} friend={selectedFriend} key={selectedFriend} />
-            </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="welcome-screen">
+            <img src={logo} alt="App Logo" className="welcome-logo" />
+            <h2 className="welcome-message">Connect With Your Friends!</h2>
+          </div>
+        )}
       </div>
     </div>
   );

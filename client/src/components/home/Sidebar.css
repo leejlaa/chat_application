@@ -15,7 +15,7 @@
 .sidebar-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 10px;
+  margin-bottom: 13px;
 }
 
 .sidebar-header button {
