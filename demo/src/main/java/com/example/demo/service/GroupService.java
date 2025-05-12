@@ -12,7 +12,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -57,24 +56,25 @@ public class GroupService {
     }
 
     public List<User> getGroupMembers(Long groupId) {
-    ChatGroup group = chatGroupRepository.findById(groupId)
-            .orElseThrow(() -> new RuntimeException("Group not found"));
-    return List.copyOf(group.getMembers());
-}
-public List<GroupMessage> getGroupMessageHistory(Long groupId, String username) {
-    ChatGroup group = chatGroupRepository.findById(groupId)
-            .orElseThrow(() -> new RuntimeException("Group not found"));
-
-    User user = userRepository.findByUsername(username)
-            .orElseThrow(() -> new RuntimeException("User not found"));
-
-    if (!group.getMembers().contains(user)) {
-        throw new RuntimeException("You are not a member of this group");
+        ChatGroup group = chatGroupRepository.findById(groupId)
+                .orElseThrow(() -> new RuntimeException("Group not found"));
+        return List.copyOf(group.getMembers());
     }
 
-    return groupMessageRepository.findByGroupIdOrderByTimestamp(groupId);
-}
+    public List<GroupMessage> getGroupMessageHistory(Long groupId, String username) {
+        ChatGroup group = chatGroupRepository.findById(groupId)
+                .orElseThrow(() -> new RuntimeException("Group not found"));
 
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!group.getMembers().contains(user)) {
+            throw new RuntimeException("You are not a member of this group");
+        }
+
+        return groupMessageRepository.findByGroupIdOrderByTimestampAsc(groupId);
+
+    }
 
     public void leaveGroup(String username, Long groupId) {
         ChatGroup group = chatGroupRepository.findById(groupId)
