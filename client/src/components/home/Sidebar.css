@@ -2,249 +2,222 @@
   position: fixed;
   right: 0;
   top: 0;
-  width: 250px;
+  width: 270px;
   height: 100%;
-  background-color: #f5f5f5;
-  box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+  background-color: #ffffff;
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.05);
   padding: 20px;
   box-sizing: border-box;
-  font-family: 'Arial', sans-serif;
+  font-family: 'Segoe UI', sans-serif;
   z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .sidebar-header {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 13px;
+  justify-content: space-around;
+  align-items: center;
 }
 
 .sidebar-header button {
   background: none;
   border: none;
-  font-size: 16px;
-  cursor: pointer;
+  font-size: 14px;
+  color: #333;
   padding: 8px 12px;
-  color: #001f3f;
-  border-radius: 5px;
-  transition: all 0.2s;
-  position: relative;
-  bottom: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+  font-weight: 500;
 }
 
-.sidebar-header button .sidebar-tab-icon {
-  filter: invert(13%) sepia(97%) saturate(7492%) hue-rotate(210deg) brightness(90%) contrast(110%);
-  transition: filter 0.2s;
-}
-
-.sidebar-header button:hover .sidebar-tab-icon,
-.sidebar-header button.active .sidebar-tab-icon {
-  filter: invert(13%) sepia(97%) saturate(7492%) hue-rotate(210deg) brightness(120%) contrast(120%);
+.sidebar-header button:hover,
+.sidebar-header button.active {
+  background-color: #e6f0ff;
+  color: #003366;
 }
 
 .sidebar-header button.active::after {
   content: '';
-  position: absolute;
-  bottom: 4px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 24px;
+  display: block;
   height: 2px;
-  background-color: #001f3f;
+  background: #003366;
+  margin-top: 4px;
   border-radius: 1px;
 }
 
-.sidebar-header button:hover {
-  background: none;
+.sidebar-tab-icon {
+  width: 22px;
+  height: 22px;
+  margin-right: 4px;
+  filter: brightness(0) saturate(100%) invert(12%) sepia(98%) saturate(1394%) hue-rotate(206deg) brightness(90%) contrast(104%);
 }
 
 .tab-content {
-  margin-top: 4px;
+  flex: 1;
+  overflow-y: auto;
 }
 
-.friends-list, .pending-requests {
+.friends-list,
+.pending-requests {
   list-style: none;
   padding: 0;
   margin: 0;
-  margin-top: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.friend-item, .pending-item {
+.friend-item,
+.pending-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  background: #fff;
-  margin-bottom: 10px;
-  padding: 8px 12px;
-  border-radius: 8px;
-  color: #000;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background: #f9f9f9;
+  padding: 10px;
+  border-radius: 10px;
+  transition: background 0.2s, box-shadow 0.2s;
   cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.friend-item:hover, .pending-item:hover {
-  background-color: #f0f8ff;
+.friend-item:hover,
+.pending-item:hover {
+  background-color: #eef6ff;
 }
 
 .friend-avatar {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  overflow: hidden;
+  background-color: #ddd;
   margin-right: 10px;
-  background-color: #e0e0e0;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  overflow: hidden;
 }
 
 .friend-avatar img {
-  width: 20px;
-  height: 20px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
 .friend-profile {
-  display: flex;
-  align-items: center;
   flex: 1;
-  justify-content: flex-start;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .friend-name {
-  font-weight: bold;
-  color: #000;
-  cursor: pointer;
-  flex: 1;
+  font-weight: 600;
+  font-size: 14px;
+  color: #111;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  text-align: left;
-  display: flex;
-  align-items: center;
-  padding-left: 0;
 }
 
 .username {
-  color: #000;
-  font-weight: bold;
+  font-size: 12px;
+  color: #666;
 }
 
 .action-buttons {
   display: flex;
   gap: 6px;
-  margin-left: auto;
 }
 
 .icon-button {
   background: none;
   border: none;
-  cursor: pointer;
-  padding: 5px;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.2s;
+  padding: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
 .icon-button:hover {
-  background: none;
+  background-color: #e6e6e6;
 }
 
 .action-icon {
-  width: 22px;
-  height: 22px;
-  filter: invert(13%) sepia(97%) saturate(7492%) hue-rotate(210deg) brightness(90%) contrast(110%);
-  transition: filter 0.2s;
-}
-
-.icon-button:hover .action-icon {
-  filter: invert(13%) sepia(97%) saturate(7492%) hue-rotate(210deg) brightness(120%) contrast(120%);
+  width: 18px;
+  height: 18px;
+  filter: brightness(0) saturate(100%) invert(12%) sepia(98%) saturate(1394%) hue-rotate(206deg) brightness(90%) contrast(104%);
 }
 
 .add-friend {
+  padding-top: 8px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  margin-top: 5px;
+  gap: 10px;
 }
 
 .add-friend-row {
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
   gap: 8px;
+  align-items: center;
 }
 
 .add-friend input {
-  width: 140px;
-  max-width: 180px;
-  padding: 4px 10px;
-  border: 1.5px solid #001f3f;
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
   border-radius: 8px;
-  margin-bottom: 0;
-  font-size: 1rem;
-  outline: none;
-  background: #fff;
-  color: #001f3f;
+  font-size: 14px;
+  background-color: #fff;
   transition: border-color 0.2s, box-shadow 0.2s;
-  height: 24px;
 }
 
 .add-friend input:focus {
   border-color: #0056b3;
-  box-shadow: 0 0 6px #001f3f33;
+  box-shadow: 0 0 4px rgba(0, 85, 204, 0.25);
+  outline: none;
 }
 
 .add-friend-icon-btn {
-  background: none;
-  border: none;
-  padding: 0 0 0 4px;
-  cursor: pointer;
-  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background-color: #003366;
   display: flex;
   align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
   transition: background 0.2s;
-  width: 28px;
-  height: 28px;
-  min-width: 0;
-  min-height: 0;
-}
-
-.add-friend-icon {
-  width: 24px;
-  height: 24px;
-  filter: invert(13%) sepia(97%) saturate(7492%) hue-rotate(210deg) brightness(90%) contrast(110%);
-  transition: filter 0.2s;
-}
-
-.add-friend-icon-btn:hover .add-friend-icon {
-  filter: invert(13%) sepia(97%) saturate(7492%) hue-rotate(210deg) brightness(120%) contrast(120%);
 }
 
 .add-friend-icon-btn:hover {
-  background: none;
+  background-color: #004080;
+}
+
+.add-friend-icon {
+  width: 20px;
+  height: 20px;
+  filter: invert(100%);
 }
 
 .message {
-  margin-top: 5px;
-  margin-bottom: 12px;
+  font-size: 13px;
   text-align: center;
-  font-size: 0.9rem;
-  padding: 5px 10px;
+  padding: 6px;
   border-radius: 6px;
+  margin-top: 4px;
 }
 
 .message.success {
-  color: #008000;
-  background-color: rgba(0, 128, 0, 0.1);
+  background-color: #e6ffed;
+  color: #2e7d32;
 }
 
 .message.error {
-  color: #dc3545;
-  background-color: rgba(220, 53, 69, 0.1);
+  background-color: #ffe6e6;
+  color: #cc0000;
 }
 
 .fade-out {
@@ -261,62 +234,39 @@
   }
 }
 
-.sidebar-tab-icon {
-  width: 28px;
-  height: 28px;
-  filter: invert(13%) sepia(97%) saturate(7492%) hue-rotate(210deg) brightness(90%) contrast(110%);
-  margin: 0 2px;
-}
-
-.sidebar-separator {
-  width: 400px;
-  height: 3px;
-  background: #001f3f;
-  border-radius: 2px;
-  margin-bottom: 20px;
-  margin-top: -10px;
-  margin-left: -20px;
-}
-
 .sidebar-tab-label {
-  text-align: center;
-  font-size: 1.1rem;
+  font-size: 16px;
   font-weight: bold;
-  color: #001f3f;
-  margin-bottom: 12px;
-  letter-spacing: 0.5px;
+  color: #003366;
+  text-align: center;
 }
 
 .empty-message {
-  color: #666;
   font-style: italic;
+  font-size: 13px;
+  color: #999;
   text-align: center;
-  margin-top: 10px;
+  padding-top: 10px;
 }
 
 .sidebar-logout {
-  position: absolute;
-  bottom: 20px;
-  left: 0;
-  right: 0;
-  margin: 0 auto;
-  width: 50%;
   text-align: center;
+  margin-top: auto;
 }
 
 .logout-button {
-  width: 70%;
+  width: 100%;
   padding: 10px 0;
-  background-color: navy;
+  background-color: #003366;
   color: white;
-  font-size: 1rem;
-  font-weight: bold;
+  font-weight: 600;
+  font-size: 14px;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background 0.2s;
 }
 
 .logout-button:hover {
-  background-color: #3366cc;
-} 
+  background-color: #004080;
+}

@@ -221,4 +221,4 @@ export default function Sidebar({ username, onSelectFriend }) {
       <button onClick={handleLogout} className="logout-button sidebar-logout">Logout</button>
     </div>
   );
-} 
+}
