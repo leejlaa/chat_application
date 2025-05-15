@@ -48,7 +48,54 @@ public class GroupService {
         group.setMembers(members);
         group.setOwner(creator);
 
-        return chatGroupRepository.save(group);
+        // Save group first to generate ID
+        ChatGroup savedGroup = chatGroupRepository.save(group);
+
+        // Create system message
+        GroupMessage systemMessage = new GroupMessage();
+        systemMessage.setSender("SYSTEM");
+        systemMessage.setContent(creator.getUsername() + " has created the group.");
+        systemMessage.setTimestamp(LocalDateTime.now());
+        systemMessage.setGroup(savedGroup);
+
+        groupMessageRepository.save(systemMessage);
+
+        // Send message to WebSocket topic
+        messagingTemplate.convertAndSend("/topic/group/" + savedGroup.getId(), systemMessage);
+
+        return savedGroup;
+    }
+
+    public void addMemberToGroup(String requesterUsername, Long groupId, String usernameToAdd) {
+        ChatGroup group = chatGroupRepository.findById(groupId)
+                .orElseThrow(() -> new RuntimeException("Group not found"));
+
+        User requester = userRepository.findByUsername(requesterUsername)
+                .orElseThrow(() -> new RuntimeException("Requester not found"));
+
+        if (!group.getOwner().equals(requester)) {
+            throw new RuntimeException("Only the group owner can add members.");
+        }
+
+        User newUser = userRepository.findByUsername(usernameToAdd)
+                .orElseThrow(() -> new RuntimeException("User to add not found"));
+
+        if (group.getMembers().contains(newUser)) {
+            throw new RuntimeException("User is already a member of the group.");
+        }
+
+        group.getMembers().add(newUser);
+        chatGroupRepository.save(group);
+
+        // Send system message
+        GroupMessage systemMessage = new GroupMessage();
+        systemMessage.setSender("SYSTEM");
+        systemMessage.setContent(usernameToAdd + " has been added to the group by " + requesterUsername + ".");
+        systemMessage.setTimestamp(LocalDateTime.now());
+        systemMessage.setGroup(group);
+
+        groupMessageRepository.save(systemMessage);
+        messagingTemplate.convertAndSend("/topic/group/" + groupId, systemMessage);
     }
 
     public List<ChatGroup> getGroupsForUser(String username) {

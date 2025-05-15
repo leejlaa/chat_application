@@ -83,6 +83,18 @@ public class GroupController {
         }
     }
 
+    @PostMapping("/add-member/{groupId}")
+    public ResponseEntity<?> addMemberToGroup(@PathVariable Long groupId,
+            @RequestParam String usernameToAdd,
+            Principal principal) {
+        try {
+            groupService.addMemberToGroup(principal.getName(), groupId, usernameToAdd);
+            return ResponseEntity.ok(usernameToAdd + " has been added to the group.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @GetMapping("/members/{groupId}")
     public ResponseEntity<?> getGroupMembers(@PathVariable Long groupId) {
         return ResponseEntity.ok(groupService.getGroupMembers(groupId));
