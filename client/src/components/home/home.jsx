@@ -1,28 +1,40 @@
-import React from "react";
+import React, { useState } from "react";
 import "./home.css";
 import Sidebar from "./Sidebar";
 import ChatPage from "../chat-page/Chatpage";
 import RecentChats from "./RecentChats";
-import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import logo from "../../assets/icons/logo.png";
 
 export default function Home() {
   const username = localStorage.getItem("username");
-  const [selectedFriend, setSelectedFriend] = useState(null);
+  const [selectedChat, setSelectedChat] = useState(null); // Can hold either a friend or group
+  const navigate = useNavigate();
 
-  const handleSelectFriend = (friend) => {
-    setSelectedFriend(friend);
+  const handleSelectChat = (chat) => {
+    setSelectedChat(chat); // This can be a friend or a group
+    if (chat.isGroup) {
+      // Navigate to group chat page
+      navigate(`/chat/${chat.groupId}`); 
+    } else {
+      // Navigate to 1-to-1 chat page
+      navigate(`/chat/${chat.receiver}`); 
+    }
   };
 
   return (
     <div className="home-page">
-      <RecentChats username={username} onSelectFriend={handleSelectFriend} />
+      <RecentChats username={username} onSelectFriend={handleSelectChat} />
       <div className="main-content">
-        <Sidebar username={username} onSelectFriend={handleSelectFriend} />
+        <Sidebar username={username} onSelectFriend={handleSelectChat} />
         
-        {selectedFriend ? (
+        {selectedChat ? (
           <div style={{ flex: 1 }}>
-            <ChatPage username={username} friend={selectedFriend} key={selectedFriend} />
+            <ChatPage 
+              username={username} 
+              chat={selectedChat} // Pass the entire chat object
+              key={selectedChat.groupId || selectedChat.receiver} // Ensure a unique key
+            />
           </div>
         ) : (
           <div className="welcome-screen">
