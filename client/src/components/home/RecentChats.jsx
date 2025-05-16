@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import "./RecentChats.css";
 import userIcon from "../../assets/icons/user.png";
 import { FaUsers } from "react-icons/fa"; // install with: npm i react-icons
-import { useNavigate } from 'react-router-dom';
+import ChatPage from "../chat-page/Chatpage"; // Import ChatPage directly
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-export default function RecentChats({ username, onSelectFriend }) {
+export default function RecentChats({ username }) {
   const [recentChats, setRecentChats] = useState([]);
   const [userGroups, setUserGroups] = useState([]); // Store the groups
   const [loading, setLoading] = useState(true);
@@ -15,8 +15,7 @@ export default function RecentChats({ username, onSelectFriend }) {
   const [groupName, setGroupName] = useState("");
   const [selectedFriends, setSelectedFriends] = useState([]);
   const [friendsList, setFriendsList] = useState([]);
-  
-  const navigate = useNavigate();
+  const [selectedChat, setSelectedChat] = useState(null); // Keep track of the selected chat
 
   // Function to toggle friend selection
   const toggleFriendSelection = (friend) => {
@@ -199,13 +198,7 @@ export default function RecentChats({ username, onSelectFriend }) {
   };
 
   const handleSelectChat = (chat) => {
-    if (chat.isGroup) {
-      // Navigate to ChatPage for group chat
-      navigate(`/chat/${chat.groupId}`);
-    } else {
-      // Navigate to ChatPage for 1-to-1 chat
-      onSelectFriend(chat);
-    }
+    setSelectedChat(chat); // Set the selected chat (either a group or friend)
   };
 
   return (
@@ -227,25 +220,29 @@ export default function RecentChats({ username, onSelectFriend }) {
 
       <ul className="chat-list">
         {userGroups.map((group, index) => (
-          <li key={index} className="chat-item" onClick={() => handleSelectChat(group)}>
-             <div className="avatar">
+          <li key={index} className="chat-item" onClick={() => handleSelectChat({ ...group, isGroup: true })}>
+          <div className="avatar">
                 <img src={userIcon} alt="User" />
               </div>
             <div className="chat-details">
             <div className="chat-content">
             <span className="username">{group.name}</span>
             <div className="message-preview">
-                    {group.sender === username ? (
-                      <span className="message-text">
-                        <span className="you">You: </span>
-                        {truncateMessage(group.content)}
-                      </span>
-                    ) : (
-                      <span className="message-text">{truncateMessage(group.content)}</span>
-                    )}
-                  </div>
+  {group.lastMessage?.sender === username ? (
+    <span className="message-text">
+      <span className="you">You: </span>
+      {truncateMessage(group.lastMessage?.content)}
+    </span>
+  ) : (
+    <span className="message-text">
+      {truncateMessage(group.lastMessage?.content)}
+    </span>
+  )}
+</div>
+<span className="timestamp">{formatTime(group.lastMessage?.timestamp)}</span>
+
             </div>
-            <span className="timestamp">{formatTime(group.timestamp)}</span>
+            
             </div>
           </li>
         ))}
@@ -261,7 +258,7 @@ export default function RecentChats({ username, onSelectFriend }) {
           const chatPartner = getChatPartner(chat);
 
           return (
-            <li key={index} className="chat-item" onClick={() => handleSelectChat(chat)}>
+            <li key={index} className="chat-item" onClick={() => handleSelectChat(chatPartner)}>
               <div className="avatar">
                 <img src={userIcon} alt="User" />
               </div>
@@ -286,6 +283,12 @@ export default function RecentChats({ username, onSelectFriend }) {
           );
         })}
       </ul>
+
+      {selectedChat && (
+        <div className="chat-display">
+          <ChatPage username={username} chat={selectedChat} />
+        </div>
+      )}
 
       {showGroupModal && (
         <div className="modal-overlay">

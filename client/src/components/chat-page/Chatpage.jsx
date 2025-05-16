@@ -1,136 +1,126 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Client } from "@stomp/stompjs";
-import "./Chatpage.css"; // Fixed import to match the exact file name
-import userIcon from "../../assets/icons/user.png";
+import SockJS from "sockjs-client";
+import "./Chatpage.css";
 import sendIcon from "../../assets/icons/send_icon.png";
+import userIcon from "../../assets/icons/user.png";
 
-const SOCKET_URL = import.meta.env.VITE_API_URL.replace(/^http/, "ws") + "/ws";
 const API_URL = import.meta.env.VITE_API_URL;
+const SOCKET_URL = API_URL + "/ws"; // Keep it HTTP!
 
-export default function ChatPage({ username, friend }) {
+export default function ChatPage({ username, chat }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [connected, setConnected] = useState(false);
   const clientRef = useRef(null);
   const chatBoxRef = useRef(null);
 
-  // Fetch message history when a friend is selected
+  const isGroup = chat?.isGroup === true;
+  const chatTitle = isGroup ? chat.name : chat;
+
+  // Auto-scroll on new messages
   useEffect(() => {
-    if (!friend || !username) return;
-
-    const token = localStorage.getItem("authToken");
-    if (!token) return;
-
-    fetch(`${API_URL}/api/messages/history?friendUsername=${friend}`, {
-      headers: {
-        "Authorization": "Bearer " + token
-      }
-    })
-      .then(res => {
-        if (!res.ok) throw new Error("Failed to fetch message history");
-        return res.json();
-      })
-      .then(data => {
-        setMessages(data);
-      })
-      .catch(err => {
-        console.error("Error fetching message history:", err);
-      });
-  }, [username, friend]);
-
-  // Auto scroll to bottom when new messages arrive
-  useEffect(() => {
-    if (chatBoxRef.current) {
-      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
-    }
+    chatBoxRef.current?.scrollTo(0, chatBoxRef.current.scrollHeight);
   }, [messages]);
 
-  // Format timestamp to readable format
-  const formatTime = (timestamp) => {
-    if (!timestamp) return "";
-    
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  };
-
-  // WebSocket connection setup
+  // Load message history
   useEffect(() => {
     const token = localStorage.getItem("authToken");
+    if (!token || !chat || !username) return;
 
-    if (!token) {
-      console.error("No token found.");
-      return;
-    }
+    const url = isGroup
+      ? `${API_URL}/api/group-messages/history?groupId=${chat.id}`
+      : `${API_URL}/api/messages/history?friendUsername=${chat}`;
+
+    fetch(url, {
+      headers: { Authorization: "Bearer "+ token },
+    })
+      .then((res) => res.json())
+      .then(setMessages)
+      .catch(console.error);
+  }, [chat, username]);
+
+  // WebSocket connection
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (!token || !username) return;
 
     const client = new Client({
-      brokerURL: SOCKET_URL,
-      connectHeaders: {
-        Authorization: "Bearer " + token.trim(),
-      },
+      webSocketFactory: () => new SockJS(SOCKET_URL),
+      connectHeaders: { Authorization: "Bearer " + token.trim()},
+      debug: (str) => console.log("STOMP DEBUG:", str),
       onConnect: () => {
         console.log("✅ Connected to WebSocket");
         setConnected(true);
 
-        client.subscribe(`/topic/messages/${username}`, (message) => {
-          console.log("👂 Subscribing to /topic/messages/" + username);
-          console.log("📨 Received message:", message.body);
+        const topic = isGroup
+          ? `/topic/group/${chat.id}`
+          : `/topic/messages/${username}`;
+
+        client.subscribe(topic, (message) => {
           const msg = JSON.parse(message.body);
           setMessages((prev) => [...prev, msg]);
         });
       },
       onStompError: (frame) => {
-        console.error("❌ Broker error:", frame.headers["message"]);
+        console.error("❌ STOMP error:", frame.headers["message"]);
+        console.error("Details:", frame.body);
+      },
+      onWebSocketError: (err) => {
+        console.error("❌ WebSocket error:", err);
       },
       onDisconnect: () => {
-        console.log("🔌 Disconnected");
+        console.warn("🔌 Disconnected");
         setConnected(false);
       },
-      reconnectDelay: 5000,
     });
 
     client.activate();
     clientRef.current = client;
 
     return () => {
-      if (client && client.active) {
-        client.deactivate();
-      }
+      if (client.active) client.deactivate();
     };
-  }, [username]);
+  }, [username, chat]);
 
+  // Send a message
   const sendMessage = () => {
     const client = clientRef.current;
+    if (!input.trim() || !connected || !client || !client.connected) return;
 
-    if (!input.trim() || !friend || !client || !client.connected) {
-      console.warn("Message not sent. WebSocket is not ready.");
-      return;
-    }
+    const now = new Date().toISOString();
 
-    const msg = {
-      receiver: friend,
-      content: input,
-      timestamp: new Date().toISOString(),
-    };
-
-    console.log("🚀 Sending to /app/chat:", msg);
+    const messagePayload = isGroup
+      ? {
+          groupId: chat.id,
+          sender: username,
+          content: input.trim(),
+          timestamp: now,
+        }
+      : {
+          sender: username,
+          receiver: chat,
+          content: input.trim(),
+          timestamp: now,
+        };
 
     client.publish({
-      destination: "/app/chat",
-      body: JSON.stringify(msg),
+      destination: isGroup ? "/app/group" : "/app/chat",
+      body: JSON.stringify(messagePayload),
     });
 
-    setMessages((prev) => [
-      ...prev,
-      { sender: username, receiver: friend, content: input, timestamp: new Date().toISOString() },
-    ]);
+    // Optimistic UI update
+    setMessages((prev) => [...prev, messagePayload]);
     setInput("");
   };
 
-  // Function to check if a message is the first in a sequence from the same sender
-  const isFirstInSequence = (index) => {
-    if (index === 0) return true;
-    return messages[index].sender !== messages[index - 1].sender;
+  const formatTime = (timestamp) => {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
+
+  const isFirstInSequence = (index) =>
+    index === 0 || messages[index].sender !== messages[index - 1].sender;
 
   return (
     <div className="chat-container">
@@ -139,38 +129,35 @@ export default function ChatPage({ username, friend }) {
           <div className="friend-avatar">
             <img src={userIcon} alt="User" />
           </div>
-          <span className="friend-name">{friend}</span>
+          <span className="friend-name">{chatTitle}</span>
         </div>
-        {!connected && <p className="connection-status">🔌 Connecting to chat...</p>}
+        {!connected && <p className="connection-status">🔌 Connecting...</p>}
       </div>
 
       <div className="chat-box" ref={chatBoxRef}>
         {messages.map((msg, idx) => {
-          const isSentByMe = msg.sender === username;
-          const isFirst = isFirstInSequence(idx);
-          
+          const isMe = msg.sender === username;
+          const first = isFirstInSequence(idx);
+
           return (
             <div
               key={idx}
-              className={`message-wrapper ${isSentByMe ? "sent-wrapper" : "received-wrapper"}`}
+              className={`message-wrapper ${isMe ? "sent-wrapper" : "received-wrapper"}`}
             >
-              {!isSentByMe && isFirst ? (
+              {!isMe && first && (
                 <div className="sender-avatar">
-                  <img src={userIcon} alt="User" />
+                  <img src={userIcon} alt="sender" />
                 </div>
-              ) : !isSentByMe && !isFirst ? (
-                <div className="avatar-spacer"></div>
-              ) : null}
-              
-              <div className={`message-container ${isSentByMe ? "sent-container" : "received-container"}`}>
-                <div className={`message-bubble ${isSentByMe ? "sent" : "received"}`}>
-                  {!isSentByMe && isFirst && (
+              )}
+              {!isMe && !first && <div className="avatar-spacer"></div>}
+
+              <div className={`message-container ${isMe ? "sent-container" : "received-container"}`}>
+                <div className={`message-bubble ${isMe ? "sent" : "received"}`}>
+                  {!isMe && first && (
                     <div className="message-sender">{msg.sender}</div>
                   )}
                   <div className="message-content-wrapper">
-                    <div className="message-content">
-                      {msg.content}
-                    </div>
+                    <div className="message-content">{msg.content}</div>
                     <span className="message-time">{formatTime(msg.timestamp)}</span>
                   </div>
                 </div>
@@ -184,11 +171,11 @@ export default function ChatPage({ username, friend }) {
         <div className="chat-input">
           <input
             type="text"
-            value={input}
             placeholder="Type a message..."
+            value={input}
             onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
             disabled={!connected}
-            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
           />
           <button onClick={sendMessage} disabled={!connected || !input.trim()}>
             <img src={sendIcon} alt="Send" />
