@@ -22,36 +22,34 @@ public class SecurityConfig {
     }
 
     @Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-        .csrf(csrf -> csrf.disable())
-        .cors(withDefaults())
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers(
-                "/api/auth/register",
-                "/api/auth/login",
-                "/api/test",
-                "/error",
-                "/chat.html",
-                "/ws/**",        // ✅ Allow SockJS and WS fallback paths
-                "/css/**", "/js/**", "/images/**"
-            ).permitAll()
-            .requestMatchers(
-                "/api/friends/request",
-                "/api/friends/accept",
-                "/api/friends/reject",
-                "/api/friends/remove",
-                "/api/friends/list",
-                "/api/friends/pending"
-            ).authenticated()
-            .anyRequest().authenticated()
-        )
-        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(csrf -> csrf.disable())
+                .cors(withDefaults())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/api/auth/register",
+                                "/api/auth/login",
+                                "/api/test",
+                                "/error",
+                                "/chat.html",
+                                "/ws/**",
+                                "/css/**", "/js/**", "/images/**"
+                        ).permitAll()
+                        .requestMatchers(
+                                "/api/friends/request",
+                                "/api/friends/accept",
+                                "/api/friends/reject",
+                                "/api/friends/remove",
+                                "/api/friends/list",
+                                "/api/friends/pending"
+                        ).authenticated()
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
-    return http.build();
-}
-
-
+        return http.build();
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
