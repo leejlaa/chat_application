@@ -8,6 +8,9 @@ import logo from "../../assets/icons/logo.png";
 export default function Home() {
   const username = localStorage.getItem("username");
   const [selectedChat, setSelectedChat] = useState(null); // Can hold either a friend or group
+  console.log("🏠 Home render - selectedChat:", selectedChat);
+console.log("🏠 Home render - username:", username);
+
 
   // Handle selecting either a group or individual chat
   const handleSelectChat = (chat) => {

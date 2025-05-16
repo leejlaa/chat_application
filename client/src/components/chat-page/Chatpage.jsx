@@ -1,12 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Client } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
 import "./Chatpage.css";
 import sendIcon from "../../assets/icons/send_icon.png";
 import userIcon from "../../assets/icons/user.png";
 
 const API_URL = import.meta.env.VITE_API_URL;
-const SOCKET_URL = API_URL + "/ws"; // Keep it HTTP!
+const SOCKET_URL = import.meta.env.VITE_API_URL.replace(/^http/, "ws") + "/ws";
 
 export default function ChatPage({ username, chat }) {
   const [messages, setMessages] = useState([]);
@@ -16,24 +15,22 @@ export default function ChatPage({ username, chat }) {
   const chatBoxRef = useRef(null);
 
   const isGroup = chat?.isGroup === true;
-  const chatTitle = isGroup ? chat.name : chat;
+  const chatTitle = isGroup ? chat.name : (chat.username || chat);
 
-  // Auto-scroll on new messages
+  // Auto-scroll
   useEffect(() => {
     chatBoxRef.current?.scrollTo(0, chatBoxRef.current.scrollHeight);
   }, [messages]);
 
-  // Load message history
+  // Load history
   useEffect(() => {
     const token = localStorage.getItem("authToken");
-    if (!token || !chat || !username) return;
-
     const url = isGroup
       ? `${API_URL}/api/group-messages/history?groupId=${chat.id}`
-      : `${API_URL}/api/messages/history?friendUsername=${chat}`;
+      : `${API_URL}/api/messages/history?friendUsername=${chat.username || chat}`;
 
     fetch(url, {
-      headers: { Authorization: "Bearer "+ token },
+      headers: { Authorization: "Bearer " + token },
     })
       .then((res) => res.json())
       .then(setMessages)
@@ -43,34 +40,44 @@ export default function ChatPage({ username, chat }) {
   // WebSocket connection
   useEffect(() => {
     const token = localStorage.getItem("authToken");
-    if (!token || !username) return;
-
     const client = new Client({
-      webSocketFactory: () => new SockJS(SOCKET_URL),
-      connectHeaders: { Authorization: "Bearer " + token.trim()},
+      brokerURL: SOCKET_URL,
+      connectHeaders: { Authorization: "Bearer " + token.trim() },
+      reconnectDelay: 5000,
       debug: (str) => console.log("STOMP DEBUG:", str),
       onConnect: () => {
         console.log("✅ Connected to WebSocket");
         setConnected(true);
+        if (isGroup) {
+          const topic = `/topic/group/${chat.id}`;
+          console.log("📡 Subscribing to group topic:", topic);
+          client.subscribe(topic, (message) => {
+            const msg = JSON.parse(message.body);
+            console.log("📨 Received group message:", msg);
+      
+            if (msg.groupId !== chat.id) return;
+            setMessages((prev) => [...prev, msg]);
+          });
+        } else {
 
-        const topic = isGroup
-          ? `/topic/group/${chat.id}`
-          : `/topic/messages/${username}`;
+        const topic = `/topic/messages/${username}`;
+        console.log("📡 Subscribing to topic:", topic);
 
         client.subscribe(topic, (message) => {
           const msg = JSON.parse(message.body);
+          console.log("📨 Received message:", msg);
+
+          
+
           setMessages((prev) => [...prev, msg]);
         });
+        }
       },
       onStompError: (frame) => {
-        console.error("❌ STOMP error:", frame.headers["message"]);
-        console.error("Details:", frame.body);
-      },
-      onWebSocketError: (err) => {
-        console.error("❌ WebSocket error:", err);
+        console.error("❌ Broker error:", frame.headers["message"]);
       },
       onDisconnect: () => {
-        console.warn("🔌 Disconnected");
+        console.log("🔌 Disconnected");
         setConnected(false);
       },
     });
@@ -79,14 +86,14 @@ export default function ChatPage({ username, chat }) {
     clientRef.current = client;
 
     return () => {
-      if (client.active) client.deactivate();
+      client.deactivate();
     };
   }, [username, chat]);
 
-  // Send a message
+  // Send message
   const sendMessage = () => {
     const client = clientRef.current;
-    if (!input.trim() || !connected || !client || !client.connected) return;
+    if (!input.trim() || !connected || !client?.connected) return;
 
     const now = new Date().toISOString();
 
@@ -99,7 +106,7 @@ export default function ChatPage({ username, chat }) {
         }
       : {
           sender: username,
-          receiver: chat,
+          receiver: chat.username || chat,
           content: input.trim(),
           timestamp: now,
         };
@@ -109,7 +116,6 @@ export default function ChatPage({ username, chat }) {
       body: JSON.stringify(messagePayload),
     });
 
-    // Optimistic UI update
     setMessages((prev) => [...prev, messagePayload]);
     setInput("");
   };
@@ -136,6 +142,7 @@ export default function ChatPage({ username, chat }) {
 
       <div className="chat-box" ref={chatBoxRef}>
         {messages.map((msg, idx) => {
+          console.log("🧾 Rendering message:", msg)
           const isMe = msg.sender === username;
           const first = isFirstInSequence(idx);
 
@@ -153,9 +160,7 @@ export default function ChatPage({ username, chat }) {
 
               <div className={`message-container ${isMe ? "sent-container" : "received-container"}`}>
                 <div className={`message-bubble ${isMe ? "sent" : "received"}`}>
-                  {!isMe && first && (
-                    <div className="message-sender">{msg.sender}</div>
-                  )}
+                  {!isMe && first && <div className="message-sender">{msg.sender}</div>}
                   <div className="message-content-wrapper">
                     <div className="message-content">{msg.content}</div>
                     <span className="message-time">{formatTime(msg.timestamp)}</span>

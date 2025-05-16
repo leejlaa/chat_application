@@ -64,6 +64,8 @@ public class MessageController {
 
         messageRepository.save(msg);
         messagingTemplate.convertAndSend("/topic/messages/" + receiver.getUsername(), msg);
+        messagingTemplate.convertAndSend("/topic/messages/" + senderUsername, msg);
+
     }
 
     // ✅ REST endpoint for chat history

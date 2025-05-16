@@ -50,6 +50,8 @@ public class GroupMessageController {
         groupMessageRepository.save(message);
 
         messagingTemplate.convertAndSend("/topic/group/" + dto.getGroupId(), message);
+        System.out.println("✅ Group message sent: " + message.getContent());
+
     }
 
     // ✅ REST endpoint to load group message history

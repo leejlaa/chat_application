@@ -6,7 +6,7 @@ import ChatPage from "../chat-page/Chatpage"; // Import ChatPage directly
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-export default function RecentChats({ username }) {
+export default function RecentChats({ username ,onSelectFriend}) {
   const [recentChats, setRecentChats] = useState([]);
   const [userGroups, setUserGroups] = useState([]); // Store the groups
   const [loading, setLoading] = useState(true);
@@ -16,6 +16,8 @@ export default function RecentChats({ username }) {
   const [selectedFriends, setSelectedFriends] = useState([]);
   const [friendsList, setFriendsList] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null); // Keep track of the selected chat
+
+  
 
   // Function to toggle friend selection
   const toggleFriendSelection = (friend) => {
@@ -199,10 +201,14 @@ export default function RecentChats({ username }) {
 
   const handleSelectChat = (chat) => {
     setSelectedChat(chat); // Set the selected chat (either a group or friend)
+    console.log("📥 Chat selected in RecentChats:", chat);
+    onSelectFriend(chat); // ✅ Notify parent
+
   };
 
   return (
     <div className="recent-chats">
+
       <div className="create-group-wrapper">
         <button className="create-group-button" onClick={() => setShowGroupModal(true)}>
           <FaUsers className="icon" />
@@ -283,7 +289,7 @@ export default function RecentChats({ username }) {
           );
         })}
       </ul>
-
+     
       {selectedChat && (
         <div className="chat-display">
           <ChatPage username={username} chat={selectedChat} />
